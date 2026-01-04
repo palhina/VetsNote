@@ -1,0 +1,40 @@
+############################
+# Git / Meta
+############################
+.git
+.gitignore
+
+############################
+# 環境変数・秘密情報
+############################
+.env
+.env.*
+src/.env
+frontend/.env
+
+############################
+# Laravel
+############################
+src/vendor
+src/storage/logs
+src/storage/framework
+src/bootstrap/cache
+
+############################
+# React / Vite
+############################
+frontend/node_modules
+frontend/dist
+frontend/.vite
+
+############################
+# Docker
+############################
+docker/mysql/data
+
+############################
+# IDE / OS
+############################
+.vscode
+.idea
+.DS_Store
