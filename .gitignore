@@ -62,3 +62,4 @@ docker/mysql/data/
 .vagrant/
 Homestead.yaml
 Homestead.json
+CLAUDE.md

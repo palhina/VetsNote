@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PatientCaseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +29,14 @@ Route::get('/test', function () {
 //app route
 Route::post('/users', [UserController::class, 'store']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// 認証が必要なルート
+Route::middleware('auth:sanctum')->group(function () {
+    // 症例 CRUD
+    Route::get('/patient-cases', [PatientCaseController::class, 'index']);
+    Route::get('/patient-cases/{id}', [PatientCaseController::class, 'show']);
+    Route::post('/patient-cases', [PatientCaseController::class, 'store']);
+    Route::put('/patient-cases/{id}', [PatientCaseController::class, 'update']);
+    Route::delete('/patient-cases/{id}', [PatientCaseController::class, 'destroy']);
+});
 
