@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\API\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,3 +27,5 @@ Route::get('/test', function () {
 
 //app route
 Route::post('/users', [UserController::class, 'store']);
+Route::post('/login', [AuthController::class, 'login']);
+

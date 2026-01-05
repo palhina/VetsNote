@@ -1,35 +1,25 @@
-import { useState } from "react";
 import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+import { Home } from "./components/Home";
+import { LoginUser } from "./components/LoginUser";
+import { CreateUser } from "./components/CreateUser";
 
 function App() {
-  const [name, setName] = useState("");
-
-  const submit = async () => {
-    await fetch("http://localhost/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name }),
-    });
-
-    setName("");
-    alert("送信しました");
-  };
-
   return (
-    <div>
-      <h1>User Create</h1>
-
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="名前"
-      />
-
-      <button onClick={submit}>送信</button>
-    </div>
+    <>
+      <nav>
+        <Link to="/users/login">ログイン</Link> |
+        <Link to="/users/create">新規ユーザー登録</Link>
+      </nav>
+      <Routes>
+        <Route path="/users/login" element={<LoginUser />} />
+        <Route path="/users/create" element={<CreateUser />} />
+        <Route path="/dashboard" element={<Home />} />
+        <Route path="*" element={<p>404 Not Found</p>} />
+      </Routes>
+    </>
   );
 }
 
