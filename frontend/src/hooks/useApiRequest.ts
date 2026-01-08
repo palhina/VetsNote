@@ -7,7 +7,7 @@ const getCookie = (name: string): string | null => {
   return match ? decodeURIComponent(match[2]) : null;
 };
 
-type HttpMethod = "GET" | "POST";
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface RequestOptions {
   method?: HttpMethod;
@@ -32,9 +32,9 @@ export const useApiRequest = <T = unknown>(): UseApiRequestResult<T> => {
       setIsLoading(true);
 
       try {
-        // CSRF Cookie取得
+        // CSRF Cookie取得（GET以外のメソッドで必要）
         let xsrfToken: string | null = null;
-        if (method === "POST") {
+        if (method !== "GET") {
           const csrfResponse = await fetch(
             `${API_BASE_URL}/sanctum/csrf-cookie`,
             {

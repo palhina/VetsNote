@@ -4,6 +4,7 @@ import { Home } from "../components/Home";
 import { LoginUser } from "../components/LoginUser";
 import { CreateUser } from "../components/CreateUser";
 import { CreatePage } from "../components/CreatePage";
+import { PatientCaseEditPage } from "../components/PatientCaseEditPage";
 
 export const AppRoutes = () => {
   return (
@@ -22,6 +23,14 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <CreatePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patient-cases/:id/edit"
+        element={
+          <ProtectedRoute>
+            <PatientCaseEditPage />
           </ProtectedRoute>
         }
       />

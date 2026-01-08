@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\SeminarNote;
 use App\Http\Resources\NoteResource;
+use App\Http\Requests\StoreSeminarNoteRequest;
+use App\Http\Requests\UpdateSeminarNoteRequest;
 
 class SeminarNoteController extends Controller
 {
@@ -38,16 +39,9 @@ class SeminarNoteController extends Controller
     /**
      * セミナーノート作成
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreSeminarNoteRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'seminar_name' => 'required|string|max:255',
-            'held_on' => 'required|date',
-            'lecturer' => 'nullable|string|max:255',
-            'theme' => 'nullable|string|max:255',
-            'content' => 'required|string',
-        ]);
-
+        $validated = $request->validated();
         $validated['user_id'] = Auth::id();
 
         $note = SeminarNote::create($validated);
@@ -58,20 +52,12 @@ class SeminarNoteController extends Controller
     /**
      * セミナーノート更新
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateSeminarNoteRequest $request, int $id): JsonResponse
     {
         $note = SeminarNote::where('user_id', Auth::id())
             ->findOrFail($id);
 
-        $validated = $request->validate([
-            'seminar_name' => 'sometimes|required|string|max:255',
-            'held_on' => 'sometimes|required|date',
-            'lecturer' => 'nullable|string|max:255',
-            'theme' => 'nullable|string|max:255',
-            'content' => 'sometimes|required|string',
-        ]);
-
-        $note->update($validated);
+        $note->update($request->validated());
 
         return response()->json($note);
     }

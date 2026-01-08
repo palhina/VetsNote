@@ -41,6 +41,10 @@ export const Home = memo(() => {
 
   const isLoading = casesLoading || notesLoading;
 
+  const handleDeleteCase = (id: number) => {
+    setCases((prev) => prev.filter((c) => c.id !== id));
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -79,6 +83,7 @@ export const Home = memo(() => {
         <PatientCaseModal
           patientCase={selectedCase}
           onClose={() => setSelectedCase(null)}
+          onDelete={handleDeleteCase}
         />
       )}
 
