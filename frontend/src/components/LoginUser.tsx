@@ -1,38 +1,20 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useApiRequest } from "../hooks/useApiRequest";
+import { memo, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
-interface LoginResponse {
-  token?: string;
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
-
-export const LoginUser = () => {
+export const LoginUser = memo(() => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  const { execute, isLoading, error } = useApiRequest<LoginResponse>();
+  const [error, setError] = useState<string | null>(null);
+  const { login, isLoading } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     try {
-      const data = await execute("/api/login", { email, password });
-
-      if (data.token) {
-        localStorage.setItem("auth_token", data.token);
-      }
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
-      navigate("/dashboard");
-    } catch {
-      // エラーはフックで処理済み
+      await login(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ログインに失敗しました");
     }
   };
 
@@ -65,4 +47,4 @@ export const LoginUser = () => {
       </form>
     </div>
   );
-};
+});

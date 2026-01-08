@@ -1,7 +1,9 @@
 import { memo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApiRequest } from "../hooks/useApiRequest";
 
 export const CreateUser = memo(() => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,12 +13,9 @@ export const CreateUser = memo(() => {
     e.preventDefault();
 
     try {
-      await execute("/api/users", { name, email, password });
-
-      setName("");
-      setEmail("");
-      setPassword("");
+      await execute("/api/users", { body: { name, email, password } });
       alert("ユーザーを作成しました");
+      navigate("/users/login");
     } catch {
       // エラーはフックで処理
     }

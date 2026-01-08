@@ -18,7 +18,9 @@ use App\Http\Controllers\API\PatientCaseController;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    return response()->json([
+        'user' => $request->user()
+    ]);
 });
 
 // Test route
@@ -32,6 +34,9 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // 認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
+    // ログアウト
+    Route::post('/logout', [AuthController::class, 'logout']);
+
     // 症例 CRUD
     Route::get('/patient-cases', [PatientCaseController::class, 'index']);
     Route::get('/patient-cases/{id}', [PatientCaseController::class, 'show']);

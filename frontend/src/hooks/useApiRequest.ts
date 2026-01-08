@@ -7,8 +7,15 @@ const getCookie = (name: string): string | null => {
   return match ? decodeURIComponent(match[2]) : null;
 };
 
+type HttpMethod = "GET" | "POST";
+
+interface RequestOptions {
+  method?: HttpMethod;
+  body?: Record<string, unknown>;
+}
+
 interface UseApiRequestResult<T> {
-  execute: (endpoint: string, body: Record<string, unknown>) => Promise<T>;
+  execute: (endpoint: string, options?: RequestOptions) => Promise<T>;
   isLoading: boolean;
   error: string | null;
   clearError: () => void;
@@ -19,32 +26,38 @@ export const useApiRequest = <T = unknown>(): UseApiRequestResult<T> => {
   const [error, setError] = useState<string | null>(null);
 
   const execute = useCallback(
-    async (endpoint: string, body: Record<string, unknown>): Promise<T> => {
+    async (endpoint: string, options: RequestOptions = {}): Promise<T> => {
+      const { method = "POST", body } = options;
       setError(null);
       setIsLoading(true);
 
       try {
-        // CSRF Cookie 取得
-        const csrfResponse = await fetch(`${API_BASE_URL}/sanctum/csrf-cookie`, {
-          credentials: "include",
-        });
+        // CSRF Cookie取得
+        let xsrfToken: string | null = null;
+        if (method === "POST") {
+          const csrfResponse = await fetch(
+            `${API_BASE_URL}/sanctum/csrf-cookie`,
+            {
+              credentials: "include",
+            }
+          );
 
-        if (!csrfResponse.ok) {
-          throw new Error("CSRFトークンの取得に失敗しました");
+          if (!csrfResponse.ok) {
+            throw new Error("CSRFトークンの取得に失敗しました");
+          }
+
+          xsrfToken = getCookie("XSRF-TOKEN");
         }
-
-        // クッキーからXSRF-TOKENを取得
-        const xsrfToken = getCookie("XSRF-TOKEN");
 
         // APIリクエスト
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-          method: "POST",
+          method,
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
             ...(xsrfToken && { "X-XSRF-TOKEN": xsrfToken }),
           },
-          body: JSON.stringify(body),
+          ...(body && { body: JSON.stringify(body) }),
         });
 
         if (!response.ok) {
@@ -52,9 +65,12 @@ export const useApiRequest = <T = unknown>(): UseApiRequestResult<T> => {
           throw new Error(data.message || "リクエストに失敗しました");
         }
 
-        return await response.json();
+        // 空レスポンス（204 No Content）の場合
+        const text = await response.text();
+        return text ? JSON.parse(text) : ({} as T);
       } catch (err) {
-        const message = err instanceof Error ? err.message : "リクエストに失敗しました";
+        const message =
+          err instanceof Error ? err.message : "リクエストに失敗しました";
         setError(message);
         throw err;
       } finally {
