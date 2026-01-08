@@ -45,6 +45,10 @@ export const Home = memo(() => {
     setCases((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const handleDeleteNote = (id: number) => {
+    setNotes((prev) => prev.filter((n) => n.id !== id));
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -92,6 +96,7 @@ export const Home = memo(() => {
         <SeminarNoteModal
           note={selectedNote}
           onClose={() => setSelectedNote(null)}
+          onDelete={handleDeleteNote}
         />
       )}
     </div>

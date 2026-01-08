@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\SeminarNote;
 use App\Http\Resources\NoteResource;
-use App\Http\Requests\StoreSeminarNoteRequest;
-use App\Http\Requests\UpdateSeminarNoteRequest;
+use App\Http\Requests\SeminarNoteRequest;
 
 class SeminarNoteController extends Controller
 {
@@ -39,7 +38,7 @@ class SeminarNoteController extends Controller
     /**
      * セミナーノート作成
      */
-    public function store(StoreSeminarNoteRequest $request): JsonResponse
+    public function store(SeminarNoteRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $validated['user_id'] = Auth::id();
@@ -52,7 +51,7 @@ class SeminarNoteController extends Controller
     /**
      * セミナーノート更新
      */
-    public function update(UpdateSeminarNoteRequest $request, int $id): JsonResponse
+    public function update(SeminarNoteRequest $request, int $id): JsonResponse
     {
         $note = SeminarNote::where('user_id', Auth::id())
             ->findOrFail($id);

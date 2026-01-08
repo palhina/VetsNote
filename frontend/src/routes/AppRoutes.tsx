@@ -5,6 +5,7 @@ import { LoginUser } from "../components/LoginUser";
 import { CreateUser } from "../components/CreateUser";
 import { CreatePage } from "../components/CreatePage";
 import { PatientCaseEditPage } from "../components/PatientCaseEditPage";
+import { SeminarNoteEditPage } from "../components/SeminarNoteEditPage";
 
 export const AppRoutes = () => {
   return (
@@ -31,6 +32,14 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <PatientCaseEditPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/seminar-notes/:id/edit"
+        element={
+          <ProtectedRoute>
+            <SeminarNoteEditPage />
           </ProtectedRoute>
         }
       />

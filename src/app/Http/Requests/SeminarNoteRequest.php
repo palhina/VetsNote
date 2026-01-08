@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSeminarNoteRequest extends FormRequest
+class SeminarNoteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,12 +21,15 @@ class UpdateSeminarNoteRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? 'sometimes|required' : 'required';
+
         return [
-            'seminar_name' => 'sometimes|required|string|max:255',
-            'held_on' => 'sometimes|required|date',
+            'seminar_name' => "{$requiredRule}|string|max:255",
+            'held_on' => "{$requiredRule}|date",
             'lecturer' => 'nullable|string|max:255',
             'theme' => 'nullable|string|max:255',
-            'content' => 'sometimes|required|string',
+            'content' => "{$requiredRule}|string",
         ];
     }
 }
