@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PatientCaseController;
+use App\Http\Controllers\API\SeminarNoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,5 +44,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patient-cases', [PatientCaseController::class, 'store']);
     Route::put('/patient-cases/{id}', [PatientCaseController::class, 'update']);
     Route::delete('/patient-cases/{id}', [PatientCaseController::class, 'destroy']);
+
+    // セミナーノート CRUD
+    Route::get('/seminar-notes', [SeminarNoteController::class, 'index']);
+    Route::get('/seminar-notes/{id}', [SeminarNoteController::class, 'show']);
+    Route::post('/seminar-notes', [SeminarNoteController::class, 'store']);
+    Route::put('/seminar-notes/{id}', [SeminarNoteController::class, 'update']);
+    Route::delete('/seminar-notes/{id}', [SeminarNoteController::class, 'destroy']);
 });
 
