@@ -50,7 +50,7 @@ export const CreateUser = memo(() => {
           required
         />
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p style={{ color: "red", whiteSpace: "pre-line" }}>{error}</p>}
 
         <button type="submit" disabled={isLoading}>
           {isLoading ? "送信中..." : "送信"}

@@ -55,6 +55,7 @@ export const useApiRequest = <T = unknown>(): UseApiRequestResult<T> => {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
             ...(xsrfToken && { "X-XSRF-TOKEN": xsrfToken }),
           },
           ...(body && { body: JSON.stringify(body) }),
@@ -62,6 +63,11 @@ export const useApiRequest = <T = unknown>(): UseApiRequestResult<T> => {
 
         if (!response.ok) {
           const data = await response.json().catch(() => ({}));
+          // Laravelバリデーションエラー（422）の場合、errorsオブジェクトからメッセージを取得
+          if (data.errors) {
+            const messages = Object.values(data.errors).flat();
+            throw new Error(messages.join("\n"));
+          }
           throw new Error(data.message || "リクエストに失敗しました");
         }
 
