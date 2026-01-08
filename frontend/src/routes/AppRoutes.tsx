@@ -3,6 +3,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { Home } from "../components/Home";
 import { LoginUser } from "../components/LoginUser";
 import { CreateUser } from "../components/CreateUser";
+import { CreatePage } from "../components/CreatePage";
 
 export const AppRoutes = () => {
   return (
@@ -16,6 +17,14 @@ export const AppRoutes = () => {
         }
       />
 
+      <Route
+        path="/create"
+        element={
+          <ProtectedRoute>
+            <CreatePage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/users/login" element={<LoginUser />} />
       <Route path="/users/create" element={<CreateUser />} />
       <Route path="*" element={<p>404 Not Found</p>} />
