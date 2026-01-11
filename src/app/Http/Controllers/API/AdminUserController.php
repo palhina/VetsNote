@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAdminUserRequest;
+use App\Http\Requests\UpdateAdminUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
@@ -21,15 +21,9 @@ class AdminUserController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreAdminUserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|max:255',
-            'password' => 'required|string|min:8',
-            'role' => 'required|in:user,admin',
-        ]);
-
+        $validated = $request->validated();
         $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create($validated);
@@ -50,21 +44,11 @@ class AdminUserController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateAdminUserRequest $request, $id)
     {
         $user = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => [
-                'sometimes',
-                'email',
-                'max:255',
-                Rule::unique('users')->ignore($user->id),
-            ],
-            'role' => 'sometimes|in:user,admin',
-            'password' => 'sometimes|string|min:8',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);

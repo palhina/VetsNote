@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
@@ -10,14 +11,9 @@ use Illuminate\Http\Request;
 
 class AdminAuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         Log::info('admin login request', ['email' => $request->email]);
-
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
 
         $credentials = $request->only('email', 'password');
 

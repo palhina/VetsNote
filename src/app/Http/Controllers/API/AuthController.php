@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -11,14 +12,9 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-        public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         Log::info('login request', ['request' => $request->only('email', 'password')]);
-
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
 
         $credentials = $request->only('email', 'password');
 
@@ -45,6 +41,35 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logout successful'
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ], [
+            'current_password.required' => '現在のパスワードを入力してください',
+            'new_password.required' => '新しいパスワードを入力してください',
+            'new_password.min' => '新しいパスワードは8文字以上で入力してください',
+            'new_password.confirmed' => '新しいパスワードが一致しません',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => '現在のパスワードが正しくありません',
+                'errors' => ['current_password' => ['現在のパスワードが正しくありません']]
+            ], 422);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'message' => 'パスワードを変更しました'
         ]);
     }
 }
