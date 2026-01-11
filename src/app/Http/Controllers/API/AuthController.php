@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ChangePasswordRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -44,18 +45,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function changePassword(Request $request)
+    public function changePassword(ChangePasswordRequest $request)
     {
-        $request->validate([
-            'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
-        ], [
-            'current_password.required' => '現在のパスワードを入力してください',
-            'new_password.required' => '新しいパスワードを入力してください',
-            'new_password.min' => '新しいパスワードは8文字以上で入力してください',
-            'new_password.confirmed' => '新しいパスワードが一致しません',
-        ]);
-
         $user = $request->user();
 
         if (!Hash::check($request->current_password, $user->password)) {

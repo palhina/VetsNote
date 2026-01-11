@@ -46,17 +46,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * 症例とのリレーション
-     */
     public function patientCases(): HasMany
     {
         return $this->hasMany(PatientCase::class);
     }
 
-    /**
-     * セミナーメモとのリレーション
-     */
     public function seminarNotes(): HasMany
     {
         return $this->hasMany(SeminarNote::class);

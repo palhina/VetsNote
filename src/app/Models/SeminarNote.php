@@ -39,9 +39,7 @@ class SeminarNote extends Model
         'held_on' => 'date',
     ];
 
-    /**
-     * ユーザーとのリレーション
-     */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

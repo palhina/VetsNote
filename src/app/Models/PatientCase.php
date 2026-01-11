@@ -45,9 +45,7 @@ class PatientCase extends Model
         'age' => 'integer',
     ];
 
-    /**
-     * ユーザーとのリレーション
-     */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
