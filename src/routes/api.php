@@ -42,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // ログアウト
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // パスワード変更
+    Route::put('/password', [AuthController::class, 'changePassword']);
+
     // 症例 CRUD
     Route::get('/patient-cases', [PatientCaseController::class, 'index']);
     Route::get('/patient-cases/{id}', [PatientCaseController::class, 'show']);

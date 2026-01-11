@@ -56,7 +56,12 @@ export const Home = memo(() => {
         <div>
           <h1 style={{ margin: 0 }}>HOME</h1>
           {user && (
-            <p style={{ margin: "8px 0 0" }}>ようこそ、{user.name}さん</p>
+            <p style={{ margin: "8px 0 0" }}>
+              ようこそ、{user.name}さん |{" "}
+              <Link to="/mypage" style={{ color: "#007bff" }}>
+                マイページ
+              </Link>
+            </p>
           )}
         </div>
         <Link

@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AdminProtectedRoute } from "./AdminProtectedRoute";
 import { Home } from "../components/Home";
+import { MyPage } from "../components/MyPage";
 import { LoginUser } from "../components/LoginUser";
 import { CreateUser } from "../components/CreateUser";
 import { CreatePage } from "../components/CreatePage";
@@ -46,6 +47,14 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <SeminarNoteEditPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/mypage"
+        element={
+          <ProtectedRoute>
+            <MyPage />
           </ProtectedRoute>
         }
       />
