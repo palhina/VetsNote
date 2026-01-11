@@ -7,6 +7,9 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PatientCaseController;
 use App\Http\Controllers\API\SeminarNoteController;
 use App\Http\Controllers\API\SearchController;
+use App\Http\Controllers\API\AdminAuthController;
+use App\Http\Controllers\API\AdminUserController;
+use App\Http\Controllers\API\AdminDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,5 +58,27 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // 横断検索
     Route::get('/search', [SearchController::class, 'search']);
+});
+
+// 管理者ログイン（認証不要）
+Route::post('/admin/login', [AdminAuthController::class, 'login']);
+
+// 管理者専用ルート（認証 + admin権限が必要）
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    // 管理者認証
+    Route::post('/logout', [AdminAuthController::class, 'logout']);
+    Route::get('/user', [AdminAuthController::class, 'user']);
+
+    // ユーザー管理
+    Route::get('/users', [AdminUserController::class, 'index']);
+    Route::post('/users', [AdminUserController::class, 'store']);
+    Route::get('/users/{id}', [AdminUserController::class, 'show']);
+    Route::put('/users/{id}', [AdminUserController::class, 'update']);
+    Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
+
+    // 全データ閲覧
+    Route::get('/patient-cases', [AdminDataController::class, 'patientCases']);
+    Route::get('/seminar-notes', [AdminDataController::class, 'seminarNotes']);
+    Route::get('/statistics', [AdminDataController::class, 'statistics']);
 });
 
