@@ -39,10 +39,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // 認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
-    // ログアウト
     Route::post('/logout', [AuthController::class, 'logout']);
-
-    // パスワード変更
     Route::put('/password', [AuthController::class, 'changePassword']);
 
     // 症例 CRUD
@@ -68,7 +65,6 @@ Route::post('/admin/login', [AdminAuthController::class, 'login']);
 
 // 管理者専用ルート（認証 + admin権限が必要）
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
-    // 管理者認証
     Route::post('/logout', [AdminAuthController::class, 'logout']);
     Route::get('/user', [AdminAuthController::class, 'user']);
 
@@ -79,7 +75,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::put('/users/{id}', [AdminUserController::class, 'update']);
     Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
 
-    // 全データ閲覧
+    // 全ノート閲覧
     Route::get('/patient-cases', [AdminDataController::class, 'patientCases']);
     Route::get('/seminar-notes', [AdminDataController::class, 'seminarNotes']);
     Route::get('/statistics', [AdminDataController::class, 'statistics']);
