@@ -1,10 +1,27 @@
 import "./App.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AppRoutes } from "./routes/AppRoutes";
 import { AuthProvider } from "./providers/AuthProvider";
 import { useAuth } from "./hooks/useAuth";
 
-const Navigation = () => {
+const AdminNavigation = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminUser");
+    navigate("/admin/login");
+  };
+
+  return (
+    <nav>
+      <Link to="/admin">Admin Dashboard</Link> |
+      <Link to="/admin/users/create">Admin新規作成</Link> |
+      <button onClick={handleLogout}>ログアウト</button>
+    </nav>
+  );
+};
+
+const UserNavigation = () => {
   const { isAuthenticated, logout, isLoading } = useAuth();
 
   if (isAuthenticated) {
@@ -24,6 +41,17 @@ const Navigation = () => {
       <Link to="/users/create">新規ユーザー登録</Link>
     </nav>
   );
+};
+
+const Navigation = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith("/admin");
+
+  if (isAdminPage) {
+    return <AdminNavigation />;
+  }
+
+  return <UserNavigation />;
 };
 
 function App() {
