@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PatientCaseController;
 use App\Http\Controllers\API\SeminarNoteController;
+use App\Http\Controllers\API\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,5 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/seminar-notes', [SeminarNoteController::class, 'store']);
     Route::put('/seminar-notes/{id}', [SeminarNoteController::class, 'update']);
     Route::delete('/seminar-notes/{id}', [SeminarNoteController::class, 'destroy']);
+
+    // 横断検索
+    Route::get('/search', [SearchController::class, 'search']);
 });
 

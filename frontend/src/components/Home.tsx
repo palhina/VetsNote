@@ -1,8 +1,12 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { Link } from "react-router-dom";
+
 import { useAuth } from "../hooks/useAuth";
-import { useApiRequest } from "../hooks/useApiRequest";
+import { useHomeData } from "../hooks/useHomeData";
+import { useSearch } from "../hooks/useSearch";
 import type { PatientCase, SeminarNote } from "../types";
+import { SearchBar } from "./SearchBar";
+import { Loading } from "./Loading";
 import { PatientCaseList } from "./PatientCaseList";
 import { SeminarNoteList } from "./SeminarNoteList";
 import { PatientCaseModal } from "./PatientCaseModal";
@@ -10,51 +14,50 @@ import { SeminarNoteModal } from "./SeminarNoteModal";
 
 export const Home = memo(() => {
   const { user } = useAuth();
-  const { execute: fetchCases, isLoading: casesLoading } =
-    useApiRequest<PatientCase[]>();
-  const { execute: fetchNotes, isLoading: notesLoading } =
-    useApiRequest<SeminarNote[]>();
+  const {
+    cases,
+    notes,
+    isLoading: dataLoading,
+    handleDeleteCase,
+    handleDeleteNote,
+  } = useHomeData();
 
-  const [cases, setCases] = useState<PatientCase[]>([]);
-  const [notes, setNotes] = useState<SeminarNote[]>([]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    isSearching,
+    searchedCases,
+    searchedNotes,
+    isLoading: searchLoading,
+    handleSearch,
+    handleClearSearch,
+    handleKeyDown,
+  } = useSearch();
+
   const [selectedCase, setSelectedCase] = useState<PatientCase | null>(null);
   const [selectedNote, setSelectedNote] = useState<SeminarNote | null>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [casesData, notesData] = await Promise.all([
-          fetchCases("/api/patient-cases", { method: "GET" }),
-          fetchNotes("/api/seminar-notes", { method: "GET" }),
-        ]);
-        setCases(casesData);
-        setNotes(notesData);
-      } catch (err) {
-        console.error("データの取得に失敗しました", err);
-      }
-    };
+  const isLoading = dataLoading || searchLoading;
 
-    if (user) {
-      loadData();
-    }
-  }, [user, fetchCases, fetchNotes]);
-
-  const isLoading = casesLoading || notesLoading;
-
-  const handleDeleteCase = (id: number) => {
-    setCases((prev) => prev.filter((c) => c.id !== id));
-  };
-
-  const handleDeleteNote = (id: number) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-  };
+  // 表示するデータ（検索中は検索結果、そうでなければ全件）
+  const displayCases = isSearching ? searchedCases : cases;
+  const displayNotes = isSearching ? searchedNotes : notes;
 
   return (
     <div style={{ padding: "20px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      {/* ヘッダー */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <div>
           <h1 style={{ margin: 0 }}>HOME</h1>
-          {user && <p style={{ margin: "8px 0 0" }}>ようこそ、{user.name}さん</p>}
+          {user && (
+            <p style={{ margin: "8px 0 0" }}>ようこそ、{user.name}さん</p>
+          )}
         </div>
         <Link
           to="/create"
@@ -72,13 +75,27 @@ export const Home = memo(() => {
         </Link>
       </div>
 
+      {/* 検索バー */}
+      <SearchBar
+        query={searchQuery}
+        onChange={setSearchQuery}
+        onSearch={handleSearch}
+        onClear={handleClearSearch}
+        onKeyDown={handleKeyDown}
+        isSearching={isSearching}
+        resultCount={{
+          cases: searchedCases.length,
+          notes: searchedNotes.length,
+        }}
+      />
+
       {/* 症例・セミナー一覧表示 */}
       {isLoading ? (
-        <p>読み込み中...</p>
+        <Loading />
       ) : (
         <div style={{ display: "flex", gap: "40px", marginTop: "20px" }}>
-          <PatientCaseList cases={cases} onSelect={setSelectedCase} />
-          <SeminarNoteList notes={notes} onSelect={setSelectedNote} />
+          <PatientCaseList cases={displayCases} onSelect={setSelectedCase} />
+          <SeminarNoteList notes={displayNotes} onSelect={setSelectedNote} />
         </div>
       )}
 
