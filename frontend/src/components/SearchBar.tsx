@@ -38,7 +38,7 @@ export const SearchBar = memo(
             value={query}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="症例・セミナーを検索..."
+            placeholder="検索... (スペース=AND, カンマ=OR)"
             style={{
               flex: 1,
               maxWidth: "400px",
@@ -83,6 +83,12 @@ export const SearchBar = memo(
         {isSearching && resultCount && (
           <p style={{ marginTop: "12px", color: "#666" }}>
             検索結果: 症例 {resultCount.cases}件、セミナー {resultCount.notes}件
+          </p>
+        )}
+
+        {!isSearching && (
+          <p style={{ marginTop: "8px", fontSize: "12px", color: "#999" }}>
+            例: 「犬 骨折」= 両方含む / 「犬,猫」= どちらか含む
           </p>
         )}
       </div>
