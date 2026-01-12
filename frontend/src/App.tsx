@@ -1,22 +1,14 @@
 import "./App.css";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AppRoutes } from "./routes/AppRoutes";
 import { AuthProvider } from "./providers/AuthProvider";
 import { useAuth } from "./hooks/useAuth";
 
 const AdminNavigation = () => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("adminUser");
-    navigate("/admin/login");
-  };
-
   return (
     <nav>
       <Link to="/admin">Admin Dashboard</Link> |
-      <Link to="/admin/users/create">Admin新規作成</Link> |
-      <button onClick={handleLogout}>ログアウト</button>
+      <Link to="/admin/users/create">Admin新規作成</Link>
     </nav>
   );
 };
