@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
-import { Home } from "../Home";
-import { renderWithProviders, mockUser } from "../../test/testUtils";
+import { Home } from "../../features/home";
+import { renderWithProviders, mockUser } from "../../testing/testUtils";
 
 // useHomeDataのモック
 vi.mock("../../hooks/useHomeData", () => ({

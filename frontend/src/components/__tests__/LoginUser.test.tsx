@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { LoginUser } from "../LoginUser";
-import { renderWithProviders } from "../../test/testUtils";
+import { LoginUser } from "../../features/user";
+import { renderWithProviders } from "../../testing/testUtils";
 
 describe("LoginUser", () => {
   const mockLogin = vi.fn();

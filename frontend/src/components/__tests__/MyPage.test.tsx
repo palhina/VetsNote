@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MyPage } from "../MyPage";
-import { renderWithProviders, mockUser } from "../../test/testUtils";
+import { MyPage } from "../../features/user";
+import { renderWithProviders, mockUser } from "../../testing/testUtils";
 
 // useApiRequestのモック
 const mockExecute = vi.fn();

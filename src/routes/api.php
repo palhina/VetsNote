@@ -21,23 +21,18 @@ use App\Http\Controllers\API\AdminDataController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+// 認証済みユーザー情報取得
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
         'user' => $request->user()
     ]);
 });
 
-// Test route
-Route::get('/test', function () {
-    return response()->json(['ok' => true]);
-});
-
-//app route
+// ユーザー登録とログイン（認証不要）
 Route::post('/users', [UserController::class, 'store']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// 認証が必要なルート
+// ユーザーとして認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/password', [AuthController::class, 'changePassword']);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useApiRequest } from "../hooks/useApiRequest";
 import type { User } from "../types";
 
@@ -7,11 +7,7 @@ interface AdminUserResponse {
   user: User;
 }
 
-export const AdminProtectedRoute = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const AdminProtectedRoute = () => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -44,5 +40,5 @@ export const AdminProtectedRoute = ({
     return null;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useApiRequest } from "./useApiRequest";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../features/auth";
 import type { PatientCase, SeminarNote } from "../types";
 
 interface UseHomeDataReturn {

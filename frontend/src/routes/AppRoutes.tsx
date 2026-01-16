@@ -1,22 +1,27 @@
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AdminProtectedRoute } from "./AdminProtectedRoute";
-import { Home } from "../components/Home";
-import { MyPage } from "../components/MyPage";
-import { LoginUser } from "../components/LoginUser";
-import { CreateUser } from "../components/CreateUser";
-import { CreatePage } from "../components/CreatePage";
-import { PatientCaseEditPage } from "../components/PatientCaseEditPage";
-import { SeminarNoteEditPage } from "../components/SeminarNoteEditPage";
-import { AdminLogin } from "../components/admin/AdminLogin";
-import { AdminDashboard } from "../components/admin/AdminDashboard";
-import { UserManagement } from "../components/admin/UserManagement";
-import { DataViewer } from "../components/admin/DataViewer";
-import { AdminCreate } from "../components/admin/AdminCreate";
+import { Home } from "../features/home";
+import { MyPage, LoginUser, CreateUser } from "../features/user";
+import { CreatePage } from "../features/create";
+import { PatientCaseEditPage } from "../features/patientCase";
+import { SeminarNoteEditPage } from "../features/seminarNote";
+import {
+  AdminLogin,
+  AdminDashboard,
+  UserManagement,
+  DataViewer,
+  AdminCreate,
+} from "../features/admin";
 
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Routes */}
+      <Route path="/users/login" element={<LoginUser />} />
+      <Route path="/users/create" element={<CreateUser />} />
+
+      {/* Protected User Routes */}
       <Route
         path="/"
         element={
@@ -25,7 +30,6 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/create"
         element={
@@ -58,43 +62,17 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="/users/login" element={<LoginUser />} />
-      <Route path="/users/create" element={<CreateUser />} />
 
-      {/* Admin Routes */}
+      {/* Admin Login (public) */}
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route
-        path="/admin"
-        element={
-          <AdminProtectedRoute>
-            <AdminDashboard />
-          </AdminProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/users"
-        element={
-          <AdminProtectedRoute>
-            <UserManagement />
-          </AdminProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/data"
-        element={
-          <AdminProtectedRoute>
-            <DataViewer />
-          </AdminProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/users/create"
-        element={
-          <AdminProtectedRoute>
-            <AdminCreate />
-          </AdminProtectedRoute>
-        }
-      />
+
+      {/* Admin Protected Routes - ネストで完全防御 */}
+      <Route path="/admin" element={<AdminProtectedRoute />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="users/create" element={<AdminCreate />} />
+        <Route path="data" element={<DataViewer />} />
+      </Route>
 
       <Route path="*" element={<p>404 Not Found</p>} />
     </Routes>
