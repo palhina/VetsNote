@@ -1,4 +1,5 @@
 import { memo, useState, useMemo } from "react";
+import styled, { css } from "styled-components";
 import type { SeminarNote } from "../../types";
 
 type SortKey = "held_on" | "created_at" | "seminar_name";
@@ -8,6 +9,89 @@ interface Props {
   notes: SeminarNote[];
   onSelect: (note: SeminarNote) => void;
 }
+
+const Container = styled.div`
+  flex: 1;
+`;
+
+const Title = styled.h2`
+  margin: 0 0 ${({ theme }) => theme.spacing[4]} 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.neutral[800]};
+`;
+
+const SortContainer = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+const SortButton = styled.button<{ $isActive: boolean }>`
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[3]}`};
+  border: 1px solid ${({ theme }) => theme.colors.neutral[300]};
+  border-radius: ${({ theme }) => theme.borders.radius.base};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  ${({ $isActive, theme }) =>
+    $isActive
+      ? css`
+          background-color: ${theme.colors.neutral[200]};
+          color: ${theme.colors.neutral[800]};
+        `
+      : css`
+          background-color: ${theme.colors.background.primary};
+          color: ${theme.colors.neutral[600]};
+        `}
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.neutral[200]};
+  }
+`;
+
+const List = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const ListItem = styled.li`
+  border: 1px solid ${({ theme }) => theme.colors.neutral[200]};
+  border-radius: ${({ theme }) => theme.borders.radius.md};
+  padding: ${({ theme }) => theme.spacing[3]};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.neutral[50]};
+    border-color: ${({ theme }) => theme.colors.primary[300]};
+  }
+`;
+
+const ItemTitle = styled.strong`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.neutral[800]};
+`;
+
+const ItemMeta = styled.p`
+  margin: ${({ theme }) => theme.spacing[1]} 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[500]};
+`;
+
+const ItemTheme = styled.p`
+  margin: ${({ theme }) => theme.spacing[1]} 0 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[600]};
+`;
+
+const EmptyMessage = styled.p`
+  color: ${({ theme }) => theme.colors.neutral[500]};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
 
 export const SeminarNoteList = memo(({ notes, onSelect }: Props) => {
   const [sortKey, setSortKey] = useState<SortKey>("held_on");
@@ -50,87 +134,48 @@ export const SeminarNoteList = memo(({ notes, onSelect }: Props) => {
   };
 
   return (
-    <div style={{ flex: 1 }}>
-      <h2>セミナーノート一覧</h2>
+    <Container>
+      <Title>セミナーノート一覧</Title>
 
       {notes.length > 0 && (
-        <div style={{ marginBottom: "12px", display: "flex", gap: "8px" }}>
-          <button
+        <SortContainer>
+          <SortButton
+            $isActive={sortKey === "held_on"}
             onClick={() => handleSortChange("held_on")}
-            style={{
-              padding: "6px 12px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: sortKey === "held_on" ? "#e0e0e0" : "white",
-            }}
           >
             開催日{getSortLabel("held_on")}
-          </button>
-          <button
+          </SortButton>
+          <SortButton
+            $isActive={sortKey === "created_at"}
             onClick={() => handleSortChange("created_at")}
-            style={{
-              padding: "6px 12px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: sortKey === "created_at" ? "#e0e0e0" : "white",
-            }}
           >
             作成日{getSortLabel("created_at")}
-          </button>
-          <button
+          </SortButton>
+          <SortButton
+            $isActive={sortKey === "seminar_name"}
             onClick={() => handleSortChange("seminar_name")}
-            style={{
-              padding: "6px 12px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: sortKey === "seminar_name" ? "#e0e0e0" : "white",
-            }}
           >
             セミナー名{getSortLabel("seminar_name")}
-          </button>
-        </div>
+          </SortButton>
+        </SortContainer>
       )}
 
       {notes.length === 0 ? (
-        <p>セミナーノートがありません</p>
+        <EmptyMessage>セミナーノートがありません</EmptyMessage>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <List>
           {sortedNotes.map((n) => (
-            <li
-              key={n.id}
-              onClick={() => onSelect(n)}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                padding: "12px",
-                marginBottom: "10px",
-                cursor: "pointer",
-                transition: "background-color 0.2s",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#f5f5f5")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "transparent")
-              }
-            >
-              <strong>{n.seminar_name}</strong>
-              <p style={{ margin: "4px 0", color: "#888", fontSize: "14px" }}>
+            <ListItem key={n.id} onClick={() => onSelect(n)}>
+              <ItemTitle>{n.seminar_name}</ItemTitle>
+              <ItemMeta>
                 {n.held_on}
                 {n.lecturer && ` | 講師: ${n.lecturer}`}
-              </p>
-              {n.theme && (
-                <p style={{ margin: "4px 0 0", color: "#666" }}>
-                  テーマ: {n.theme}
-                </p>
-              )}
-            </li>
+              </ItemMeta>
+              {n.theme && <ItemTheme>テーマ: {n.theme}</ItemTheme>}
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Container>
   );
 });

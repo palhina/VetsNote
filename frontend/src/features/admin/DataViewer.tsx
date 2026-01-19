@@ -1,6 +1,20 @@
 import { memo, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useApiRequest } from "../../hooks/useApiRequest";
+import { PageLayout } from "../../components/layout";
+import {
+  TabList,
+  Tab,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableWrapper,
+  LinkButton,
+  Loading,
+  ErrorMessage,
+} from "../../components/ui";
 import type { PatientCase, SeminarNote, User } from "../../types";
 
 interface PatientCaseWithUser extends PatientCase {
@@ -60,132 +74,98 @@ export const DataViewer = memo(() => {
   const error = casesError || notesError;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1>Data Viewer</h1>
-        <Link
-          to="/admin"
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#6c757d",
-            color: "white",
-            textDecoration: "none",
-          }}
-        >
+    <PageLayout
+      title="Data Viewer"
+      actions={
+        <LinkButton to="/admin" variant="secondary">
           Back to Dashboard
-        </Link>
-      </div>
-
-      <div style={{ marginBottom: "20px" }}>
-        <button
+        </LinkButton>
+      }
+    >
+      <TabList>
+        <Tab
+          isActive={activeTab === "patient-cases"}
           onClick={() => setActiveTab("patient-cases")}
-          style={{
-            padding: "10px 20px",
-            marginRight: "10px",
-            backgroundColor:
-              activeTab === "patient-cases" ? "#007bff" : "#e9ecef",
-            color: activeTab === "patient-cases" ? "white" : "black",
-            border: "none",
-            cursor: "pointer",
-          }}
         >
           Patient Cases
-        </button>
-        <button
+        </Tab>
+        <Tab
+          isActive={activeTab === "seminar-notes"}
           onClick={() => setActiveTab("seminar-notes")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor:
-              activeTab === "seminar-notes" ? "#007bff" : "#e9ecef",
-            color: activeTab === "seminar-notes" ? "white" : "black",
-            border: "none",
-            cursor: "pointer",
-          }}
         >
           Seminar Notes
-        </button>
-      </div>
+        </Tab>
+      </TabList>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       {isLoading ? (
-        <p>Loading data...</p>
+        <Loading />
       ) : activeTab === "patient-cases" ? (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#f8f9fa" }}>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>ID</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>User</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Animal</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Breed</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Chief Complaint</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Diagnosis</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {patientCases.map((pc) => (
-              <tr key={pc.id}>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{pc.id}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {pc.user?.name || "Unknown"}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{pc.animal_type}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{pc.breed || "-"}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {pc.chief_complaint
-                    ? pc.chief_complaint.substring(0, 50) + "..."
-                    : "-"}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {pc.diagnosis ? pc.diagnosis.substring(0, 50) + "..." : "-"}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {new Date(pc.created_at).toLocaleDateString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableWrapper>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>ID</Th>
+                <Th>User</Th>
+                <Th>Animal</Th>
+                <Th>Breed</Th>
+                <Th>Chief Complaint</Th>
+                <Th>Diagnosis</Th>
+                <Th>Created</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {patientCases.map((pc) => (
+                <Tr key={pc.id}>
+                  <Td>{pc.id}</Td>
+                  <Td>{pc.user?.name || "Unknown"}</Td>
+                  <Td>{pc.animal_type}</Td>
+                  <Td>{pc.breed || "-"}</Td>
+                  <Td>
+                    {pc.chief_complaint
+                      ? pc.chief_complaint.substring(0, 50) + "..."
+                      : "-"}
+                  </Td>
+                  <Td>
+                    {pc.diagnosis ? pc.diagnosis.substring(0, 50) + "..." : "-"}
+                  </Td>
+                  <Td>{new Date(pc.created_at).toLocaleDateString()}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableWrapper>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#f8f9fa" }}>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>ID</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>User</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Seminar Name</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Held On</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Lecturer</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Theme</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {seminarNotes.map((sn) => (
-              <tr key={sn.id}>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{sn.id}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {sn.user?.name || "Unknown"}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{sn.seminar_name}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{sn.held_on}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{sn.lecturer || "-"}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{sn.theme || "-"}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {new Date(sn.created_at).toLocaleDateString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableWrapper>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>ID</Th>
+                <Th>User</Th>
+                <Th>Seminar Name</Th>
+                <Th>Held On</Th>
+                <Th>Lecturer</Th>
+                <Th>Theme</Th>
+                <Th>Created</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {seminarNotes.map((sn) => (
+                <Tr key={sn.id}>
+                  <Td>{sn.id}</Td>
+                  <Td>{sn.user?.name || "Unknown"}</Td>
+                  <Td>{sn.seminar_name}</Td>
+                  <Td>{sn.held_on}</Td>
+                  <Td>{sn.lecturer || "-"}</Td>
+                  <Td>{sn.theme || "-"}</Td>
+                  <Td>{new Date(sn.created_at).toLocaleDateString()}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableWrapper>
       )}
-    </div>
+    </PageLayout>
   );
 });

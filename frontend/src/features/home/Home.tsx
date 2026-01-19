@@ -1,16 +1,39 @@
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 import { useAuth } from "../auth";
 import { useHomeData } from "../../hooks/useHomeData";
 import { useSearch } from "../../hooks/useSearch";
 import type { PatientCase, SeminarNote } from "../../types";
 import { SearchBar } from "./SearchBar";
-import { Loading } from "../../components/ui";
+import { Loading, LinkButton } from "../../components/ui";
+import { PageLayout } from "../../components/layout";
 import { PatientCaseList } from "../patientCase/PatientCaseList";
 import { SeminarNoteList } from "../seminarNote/SeminarNoteList";
 import { PatientCaseModal } from "../patientCase/PatientCaseModal";
 import { SeminarNoteModal } from "../seminarNote/SeminarNoteModal";
+
+const WelcomeText = styled.p`
+  margin: ${({ theme }) => theme.spacing[2]} 0 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[600]};
+
+  a {
+    color: ${({ theme }) => theme.colors.primary[500]};
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+const ListContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[10]};
+  margin-top: ${({ theme }) => theme.spacing[5]};
+`;
 
 export const Home = memo(() => {
   const { user } = useAuth();
@@ -44,43 +67,20 @@ export const Home = memo(() => {
   const displayNotes = isSearching ? searchedNotes : notes;
 
   return (
-    <div style={{ padding: "20px" }}>
-      {/* ヘッダー */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0 }}>HOME</h1>
-          {user && (
-            <p style={{ margin: "8px 0 0" }}>
-              ようこそ、{user.name}さん |{" "}
-              <Link to="/mypage" style={{ color: "#007bff" }}>
-                マイページ
-              </Link>
-            </p>
-          )}
-        </div>
-        <Link
-          to="/create"
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "16px",
-            textDecoration: "none",
-          }}
-        >
+    <PageLayout
+      title="HOME"
+      actions={
+        <LinkButton to="/create" variant="primary">
           + 新規作成
-        </Link>
-      </div>
+        </LinkButton>
+      }
+    >
+      {user && (
+        <WelcomeText>
+          ようこそ、{user.name}さん | <Link to="/mypage">マイページ</Link>
+        </WelcomeText>
+      )}
 
-      {/* 検索バー */}
       <SearchBar
         query={searchQuery}
         onChange={setSearchQuery}
@@ -94,17 +94,15 @@ export const Home = memo(() => {
         }}
       />
 
-      {/* 症例・セミナー一覧表示 */}
       {isLoading ? (
         <Loading />
       ) : (
-        <div style={{ display: "flex", gap: "40px", marginTop: "20px" }}>
+        <ListContainer>
           <PatientCaseList cases={displayCases} onSelect={setSelectedCase} />
           <SeminarNoteList notes={displayNotes} onSelect={setSelectedNote} />
-        </div>
+        </ListContainer>
       )}
 
-      {/* 症例詳細モーダル */}
       {selectedCase && (
         <PatientCaseModal
           patientCase={selectedCase}
@@ -113,7 +111,6 @@ export const Home = memo(() => {
         />
       )}
 
-      {/* セミナーノート詳細モーダル */}
       {selectedNote && (
         <SeminarNoteModal
           note={selectedNote}
@@ -121,6 +118,6 @@ export const Home = memo(() => {
           onDelete={handleDeleteNote}
         />
       )}
-    </div>
+    </PageLayout>
   );
 });

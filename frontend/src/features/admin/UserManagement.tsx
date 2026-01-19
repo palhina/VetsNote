@@ -1,6 +1,23 @@
 import { memo, useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
 import { useApiRequest } from "../../hooks/useApiRequest";
+import { PageLayout } from "../../components/layout";
+import { Inline } from "../../components/layout/Container";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableWrapper,
+  Button,
+  Input,
+  Select,
+  LinkButton,
+  Badge,
+  Loading,
+  ErrorMessage,
+} from "../../components/ui";
 import type { User } from "../../types";
 
 interface UserWithCounts extends User {
@@ -77,179 +94,129 @@ export const UserManagement = memo(() => {
     }
   };
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1>User Management</h1>
-        <Link
-          to="/admin"
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#6c757d",
-            color: "white",
-            textDecoration: "none",
-          }}
-        >
-          Back to Dashboard
-        </Link>
-      </div>
+  const combinedError = error || updateError || deleteError;
 
-      {(error || updateError || deleteError) && (
-        <p style={{ color: "red" }}>{error || updateError || deleteError}</p>
-      )}
+  return (
+    <PageLayout
+      title="User Management"
+      actions={
+        <LinkButton to="/admin" variant="secondary">
+          Back to Dashboard
+        </LinkButton>
+      }
+    >
+      {combinedError && <ErrorMessage message={combinedError} />}
 
       {isLoading ? (
-        <p>Loading users...</p>
+        <Loading />
       ) : (
-        <table
-          style={{ width: "100%", borderCollapse: "collapse" }}
-        >
-          <thead>
-            <tr style={{ backgroundColor: "#f8f9fa" }}>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>ID</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Name</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Email</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Role</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Cases</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Notes</th>
-              <th style={{ padding: "12px", textAlign: "left", border: "1px solid #dee2e6" }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>{user.id}</td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {editingUser?.id === user.id ? (
-                    <input
-                      value={editForm.name}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, name: e.target.value })
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  ) : (
-                    user.name
-                  )}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {editingUser?.id === user.id ? (
-                    <input
-                      value={editForm.email}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, email: e.target.value })
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  ) : (
-                    user.email
-                  )}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {editingUser?.id === user.id ? (
-                    <select
-                      value={editForm.role}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, role: e.target.value })
-                      }
-                    >
-                      <option value="user">user</option>
-                      <option value="admin">admin</option>
-                    </select>
-                  ) : (
-                    <span
-                      style={{
-                        padding: "4px 8px",
-                        backgroundColor:
-                          user.role === "admin" ? "#dc3545" : "#28a745",
-                        color: "white",
-                        borderRadius: "4px",
-                        fontSize: "12px",
-                      }}
-                    >
-                      {user.role}
-                    </span>
-                  )}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {user.patient_cases_count}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {user.seminar_notes_count}
-                </td>
-                <td style={{ padding: "12px", border: "1px solid #dee2e6" }}>
-                  {editingUser?.id === user.id ? (
-                    <>
-                      <button
-                        onClick={handleSaveEdit}
-                        disabled={isUpdating}
-                        style={{
-                          marginRight: "5px",
-                          padding: "5px 10px",
-                          backgroundColor: "#28a745",
-                          color: "white",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
+        <TableWrapper>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>ID</Th>
+                <Th>Name</Th>
+                <Th>Email</Th>
+                <Th>Role</Th>
+                <Th>Cases</Th>
+                <Th>Notes</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {users.map((user) => (
+                <Tr key={user.id}>
+                  <Td>{user.id}</Td>
+                  <Td>
+                    {editingUser?.id === user.id ? (
+                      <Input
+                        value={editForm.name}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, name: e.target.value })
+                        }
+                      />
+                    ) : (
+                      user.name
+                    )}
+                  </Td>
+                  <Td>
+                    {editingUser?.id === user.id ? (
+                      <Input
+                        value={editForm.email}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, email: e.target.value })
+                        }
+                      />
+                    ) : (
+                      user.email
+                    )}
+                  </Td>
+                  <Td>
+                    {editingUser?.id === user.id ? (
+                      <Select
+                        value={editForm.role}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, role: e.target.value })
+                        }
                       >
-                        {isUpdating ? "Saving..." : "Save"}
-                      </button>
-                      <button
-                        onClick={handleCancelEdit}
-                        style={{
-                          padding: "5px 10px",
-                          backgroundColor: "#6c757d",
-                          color: "white",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                      </Select>
+                    ) : (
+                      <Badge
+                        variant={user.role === "admin" ? "danger" : "success"}
                       >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleEdit(user)}
-                        style={{
-                          marginRight: "5px",
-                          padding: "5px 10px",
-                          backgroundColor: "#007bff",
-                          color: "white",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        disabled={isDeleting}
-                        style={{
-                          padding: "5px 10px",
-                          backgroundColor: "#dc3545",
-                          color: "white",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                        {user.role}
+                      </Badge>
+                    )}
+                  </Td>
+                  <Td>{user.patient_cases_count}</Td>
+                  <Td>{user.seminar_notes_count}</Td>
+                  <Td>
+                    {editingUser?.id === user.id ? (
+                      <Inline $gap={2}>
+                        <Button
+                          size="sm"
+                          onClick={handleSaveEdit}
+                          disabled={isUpdating}
+                          isLoading={isUpdating}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </Button>
+                      </Inline>
+                    ) : (
+                      <Inline $gap={2}>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleEdit(user)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleDelete(user.id)}
+                          disabled={isDeleting}
+                        >
+                          Delete
+                        </Button>
+                      </Inline>
+                    )}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableWrapper>
       )}
-    </div>
+    </PageLayout>
   );
 });

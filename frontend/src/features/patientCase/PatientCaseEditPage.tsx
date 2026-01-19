@@ -1,16 +1,23 @@
 import { memo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import styled from "styled-components";
 import { useApiRequest } from "../../hooks/useApiRequest";
+import { PageLayout } from "../../components/layout";
+import { Card } from "../../components/layout/Card";
+import { Button, Loading } from "../../components/ui";
 import {
   PatientCaseForm,
   initialPatientCaseData,
 } from "./PatientCaseForm";
 import type { PatientCaseFormData } from "./PatientCaseForm";
-import {
-  primaryButtonStyle,
-  secondaryButtonStyle,
-} from "../../styles/formStyles";
 import type { PatientCase } from "../../types";
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[3]};
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.spacing[6]};
+`;
 
 export const PatientCaseEditPage = memo(() => {
   const { id } = useParams<{ id: string }>();
@@ -83,48 +90,33 @@ export const PatientCaseEditPage = memo(() => {
 
   if (fetchLoading) {
     return (
-      <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-        <p>読み込み中...</p>
-      </div>
+      <PageLayout title="症例を編集" narrow>
+        <Loading />
+      </PageLayout>
     );
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>症例を編集</h1>
+    <PageLayout title="症例を編集" narrow>
+      <Card>
+        <form onSubmit={handleSubmit}>
+          <PatientCaseForm data={formData} onChange={handleChange} />
 
-      <form onSubmit={handleSubmit}>
-        <PatientCaseForm data={formData} onChange={handleChange} />
-
-        <div
-          style={{
-            marginTop: "24px",
-            display: "flex",
-            gap: "12px",
-            justifyContent: "flex-end",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            style={secondaryButtonStyle}
-          >
-            キャンセル
-          </button>
-          <button
-            type="submit"
-            disabled={updateLoading}
-            style={{
-              ...primaryButtonStyle,
-              backgroundColor: "#2196F3",
-              cursor: updateLoading ? "not-allowed" : "pointer",
-              opacity: updateLoading ? 0.7 : 1,
-            }}
-          >
-            {updateLoading ? "更新中..." : "更新"}
-          </button>
-        </div>
-      </form>
-    </div>
+          <ButtonGroup>
+            <Button type="button" variant="ghost" onClick={() => navigate("/")}>
+              キャンセル
+            </Button>
+            <Button
+              type="submit"
+              variant="secondary"
+              isLoading={updateLoading}
+              loadingText="更新中..."
+            >
+              更新
+            </Button>
+          </ButtonGroup>
+        </form>
+      </Card>
+    </PageLayout>
   );
 });

@@ -2,6 +2,10 @@ import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApiRequest } from "../../hooks/useApiRequest";
 import { useAuth } from "../auth";
+import { PageLayout } from "../../components/layout";
+import { Stack } from "../../components/layout/Container";
+import { Card } from "../../components/layout/Card";
+import { Button, Input, FormField, ErrorMessage } from "../../components/ui";
 import type { User } from "../../types";
 
 interface AdminLoginResponse {
@@ -33,51 +37,43 @@ export const AdminLogin = memo(() => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px" }}>
-      <h1>Admin Login</h1>
+    <PageLayout title="管理者用ログイン" narrow>
+      <Card>
+        <form onSubmit={handleLogin}>
+          <Stack $gap={4}>
+            <FormField>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="管理者メールアドレス"
+                required
+              />
+            </FormField>
 
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: "15px" }}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Admin Email"
-            required
-            style={{ width: "100%", padding: "10px" }}
-          />
-        </div>
+            <FormField>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+              />
+            </FormField>
 
-        <div style={{ marginBottom: "15px" }}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-            style={{ width: "100%", padding: "10px" }}
-          />
-        </div>
+            {error && <ErrorMessage message={error} />}
 
-        {error && (
-          <p style={{ color: "red", marginBottom: "15px" }}>{error}</p>
-        )}
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#333",
-            color: "white",
-            border: "none",
-            cursor: isLoading ? "not-allowed" : "pointer",
-          }}
-        >
-          {isLoading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-    </div>
+            <Button
+              type="submit"
+              fullWidth
+              isLoading={isLoading}
+              loadingText="ログイン中…"
+            >
+              ログイン
+            </Button>
+          </Stack>
+        </form>
+      </Card>
+    </PageLayout>
   );
 });

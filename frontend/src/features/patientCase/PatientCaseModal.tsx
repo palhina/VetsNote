@@ -1,7 +1,14 @@
 import { memo, useState } from "react";
-import { Link } from "react-router-dom";
+import styled from "styled-components";
 import { useApiRequest } from "../../hooks/useApiRequest";
-import { Modal, ModalHeader, ModalActions, ConfirmDialog } from "../../components/ui";
+import {
+  Modal,
+  ModalHeader,
+  ModalActions,
+  ConfirmDialog,
+  Button,
+  LinkButton,
+} from "../../components/ui";
 import type { PatientCase } from "../../types";
 
 interface Props {
@@ -9,6 +16,26 @@ interface Props {
   onClose: () => void;
   onDelete: (id: number) => void;
 }
+
+const ContentGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+const Field = styled.div`
+  strong {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    color: ${({ theme }) => theme.colors.neutral[700]};
+  }
+`;
+
+const FieldValue = styled.p`
+  margin: ${({ theme }) => theme.spacing[1]} 0 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[600]};
+  white-space: pre-wrap;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+`;
 
 export const PatientCaseModal = memo(
   ({ patientCase, onClose, onDelete }: Props) => {
@@ -43,90 +70,59 @@ export const PatientCaseModal = memo(
             onClose={onClose}
           />
 
-          <div style={{ display: "grid", gap: "12px" }}>
-            <div>
+          <ContentGrid>
+            <Field>
               <strong>主訴:</strong>
-              <p style={{ margin: "4px 0" }}>
-                {patientCase.chief_complaint || "-"}
-              </p>
-            </div>
+              <FieldValue>{patientCase.chief_complaint || "-"}</FieldValue>
+            </Field>
             {patientCase.history && (
-              <div>
+              <Field>
                 <strong>病歴:</strong>
-                <p style={{ margin: "4px 0", whiteSpace: "pre-wrap" }}>
-                  {patientCase.history}
-                </p>
-              </div>
+                <FieldValue>{patientCase.history}</FieldValue>
+              </Field>
             )}
             {patientCase.examination && (
-              <div>
+              <Field>
                 <strong>検査所見:</strong>
-                <p style={{ margin: "4px 0", whiteSpace: "pre-wrap" }}>
-                  {patientCase.examination}
-                </p>
-              </div>
+                <FieldValue>{patientCase.examination}</FieldValue>
+              </Field>
             )}
             {patientCase.diagnosis && (
-              <div>
+              <Field>
                 <strong>診断:</strong>
-                <p style={{ margin: "4px 0" }}>{patientCase.diagnosis}</p>
-              </div>
+                <FieldValue>{patientCase.diagnosis}</FieldValue>
+              </Field>
             )}
             {patientCase.treatment && (
-              <div>
+              <Field>
                 <strong>治療:</strong>
-                <p style={{ margin: "4px 0", whiteSpace: "pre-wrap" }}>
-                  {patientCase.treatment}
-                </p>
-              </div>
+                <FieldValue>{patientCase.treatment}</FieldValue>
+              </Field>
             )}
             {patientCase.progress && (
-              <div>
+              <Field>
                 <strong>経過:</strong>
-                <p style={{ margin: "4px 0", whiteSpace: "pre-wrap" }}>
-                  {patientCase.progress}
-                </p>
-              </div>
+                <FieldValue>{patientCase.progress}</FieldValue>
+              </Field>
             )}
             {patientCase.memo && (
-              <div>
+              <Field>
                 <strong>メモ:</strong>
-                <p style={{ margin: "4px 0", whiteSpace: "pre-wrap" }}>
-                  {patientCase.memo}
-                </p>
-              </div>
+                <FieldValue>{patientCase.memo}</FieldValue>
+              </Field>
             )}
-          </div>
+          </ContentGrid>
 
           <ModalActions>
-            <button
-              onClick={() => setShowConfirm(true)}
-              style={{
-                padding: "10px 24px",
-                backgroundColor: "#f44336",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "14px",
-                cursor: "pointer",
-              }}
-            >
+            <Button variant="danger" onClick={() => setShowConfirm(true)}>
               削除
-            </button>
-            <Link
+            </Button>
+            <LinkButton
               to={`/patient-cases/${patientCase.id}/edit`}
-              style={{
-                padding: "10px 24px",
-                backgroundColor: "#2196F3",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
+              variant="secondary"
             >
               編集
-            </Link>
+            </LinkButton>
           </ModalActions>
         </Modal>
 

@@ -1,6 +1,15 @@
 import { memo, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useApiRequest } from "../../hooks/useApiRequest";
+import { PageLayout } from "../../components/layout";
+import { Inline } from "../../components/layout/Container";
+import {
+  Button,
+  LinkButton,
+  StatCard,
+  Loading,
+  ErrorMessage,
+} from "../../components/ui";
 
 interface Statistics {
   total_users: number;
@@ -22,7 +31,7 @@ export const AdminDashboard = memo(() => {
         });
         setStats(response);
       } catch {
-        // error is handled by useApiRequest
+        // errorハンドリングはuseApiRequest
       }
     };
 
@@ -40,110 +49,34 @@ export const AdminDashboard = memo(() => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
-        }}
-      >
-        <h1>Admin Dashboard</h1>
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#dc3545",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+    <PageLayout
+      title="管理者画面"
+      actions={
+        <Button variant="danger" onClick={handleLogout}>
           Logout
-        </button>
-      </div>
-
-      <nav style={{ marginBottom: "30px" }}>
-        <Link
-          to="/admin/users"
-          style={{
-            marginRight: "20px",
-            padding: "10px 20px",
-            backgroundColor: "#007bff",
-            color: "white",
-            textDecoration: "none",
-          }}
-        >
+        </Button>
+      }
+    >
+      <Inline $gap={4}>
+        <LinkButton to="/admin/users" variant="secondary">
           User Management
-        </Link>
-        <Link
-          to="/admin/data"
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#28a745",
-            color: "white",
-            textDecoration: "none",
-          }}
-        >
+        </LinkButton>
+        <LinkButton to="/admin/data" variant="primary">
           Data Viewer
-        </Link>
-      </nav>
+        </LinkButton>
+      </Inline>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       {isLoading ? (
-        <p>Loading statistics...</p>
+        <Loading />
       ) : stats ? (
-        <div style={{ display: "flex", gap: "20px" }}>
-          <div
-            style={{
-              padding: "20px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px",
-              textAlign: "center",
-              minWidth: "150px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 10px 0", color: "#666" }}>Users</h3>
-            <p style={{ fontSize: "2em", margin: 0, fontWeight: "bold" }}>
-              {stats.total_users}
-            </p>
-          </div>
-          <div
-            style={{
-              padding: "20px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px",
-              textAlign: "center",
-              minWidth: "150px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 10px 0", color: "#666" }}>
-              Patient Cases
-            </h3>
-            <p style={{ fontSize: "2em", margin: 0, fontWeight: "bold" }}>
-              {stats.total_patient_cases}
-            </p>
-          </div>
-          <div
-            style={{
-              padding: "20px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px",
-              textAlign: "center",
-              minWidth: "150px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 10px 0", color: "#666" }}>
-              Seminar Notes
-            </h3>
-            <p style={{ fontSize: "2em", margin: 0, fontWeight: "bold" }}>
-              {stats.total_seminar_notes}
-            </p>
-          </div>
-        </div>
+        <Inline $gap={4}>
+          <StatCard label="Users" value={stats.total_users} />
+          <StatCard label="Patient Cases" value={stats.total_patient_cases} />
+          <StatCard label="Seminar Notes" value={stats.total_seminar_notes} />
+        </Inline>
       ) : null}
-    </div>
+    </PageLayout>
   );
 });

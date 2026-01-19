@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import { useApiRequest } from "../hooks/useApiRequest";
 import type { User } from "../types";
+
+const LoadingContainer = styled.div`
+  padding: 20px;
+`;
 
 interface AdminUserResponse {
   user: User;
@@ -33,7 +38,7 @@ export const AdminProtectedRoute = () => {
   }, [execute, navigate]);
 
   if (checking) {
-    return <div style={{ padding: "20px" }}>Verifying admin access...</div>;
+    return <LoadingContainer>Verifying admin access...</LoadingContainer>;
   }
 
   if (!isAdmin) {

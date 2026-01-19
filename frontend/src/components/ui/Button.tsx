@@ -14,73 +14,114 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-// ボタンのバリアントごとのスタイル定義
+/**
+ * バリアントスタイル
+ *
+ * primary: メインアクション（ティール） - 安心感・信頼感を与える医療系カラー
+ * secondary: サブアクション（落ち着いたブルー） - 補助的な操作
+ * danger: 破壊的アクション（穏やかな赤） - 刺激を抑えた警告色
+ * ghost: 最小限のスタイル - 控えめな操作ボタン
+ */
 const variantStyles = {
   primary: css`
-    background-color: #4caf50;
-    color: white;
+    background-color: ${({ theme }) => theme.colors.primary[500]};
+    color: ${({ theme }) => theme.colors.neutral[0]};
     border: none;
+
     &:hover:not(:disabled) {
-      background-color: #45a049;
+      background-color: ${({ theme }) => theme.colors.primary[600]};
+    }
+
+    &:active:not(:disabled) {
+      background-color: ${({ theme }) => theme.colors.primary[700]};
     }
   `,
   secondary: css`
-    background-color: #2196f3;
-    color: white;
+    background-color: ${({ theme }) => theme.colors.semantic.info.main};
+    color: ${({ theme }) => theme.colors.neutral[0]};
     border: none;
+
     &:hover:not(:disabled) {
-      background-color: #1976d2;
+      background-color: ${({ theme }) => theme.colors.semantic.info.dark};
     }
   `,
   danger: css`
-    background-color: #f44336;
-    color: white;
+    background-color: ${({ theme }) => theme.colors.semantic.error.main};
+    color: ${({ theme }) => theme.colors.neutral[0]};
     border: none;
+
     &:hover:not(:disabled) {
-      background-color: #d32f2f;
+      background-color: ${({ theme }) => theme.colors.semantic.error.dark};
     }
   `,
   ghost: css`
-    background-color: white;
-    color: #333;
-    border: 1px solid #ccc;
+    background-color: transparent;
+    color: ${({ theme }) => theme.colors.neutral[700]};
+    border: 1px solid ${({ theme }) => theme.colors.neutral[300]};
+
     &:hover:not(:disabled) {
-      background-color: #f5f5f5;
+      background-color: ${({ theme }) => theme.colors.neutral[100]};
+      border-color: ${({ theme }) => theme.colors.neutral[400]};
     }
   `,
 };
 
+/**
+ * サイズスタイル
+ *
+ * 8pxグリッドに基づいたパディング
+ * タッチターゲットサイズ（最低44px）を考慮
+ */
 const sizeStyles = {
   sm: css`
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[3]}`};
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
   `,
   md: css`
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
   `,
   lg: css`
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[6]}`};
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
   `,
 };
-
 
 const StyledButton = styled.button<{
   $variant: Variant;
   $size: Size;
   $fullWidth: boolean;
 }>`
-  border-radius: 6px;
+  /* 基本スタイル */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  border-radius: ${({ theme }) => theme.borders.radius.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all ${({ theme }) => theme.transitions.fast};
+  white-space: nowrap;
+
+  /* バリアント適用 */
   ${({ $variant }) => variantStyles[$variant]}
+
+  /* サイズ適用 */
   ${({ $size }) => sizeStyles[$size]}
+
+  /* フル幅 */
   ${({ $fullWidth }) => $fullWidth && "width: 100%;"}
 
+  /* 無効状態 */
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  /* フォーカス状態（アクセシビリティ） */
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
+    outline-offset: 2px;
   }
 `;
 

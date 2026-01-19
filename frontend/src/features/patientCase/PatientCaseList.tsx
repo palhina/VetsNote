@@ -1,4 +1,5 @@
 import { memo, useState, useMemo } from "react";
+import styled from "styled-components";
 import type { PatientCase } from "../../types";
 
 type SortOrder = "asc" | "desc";
@@ -7,6 +8,83 @@ interface Props {
   cases: PatientCase[];
   onSelect: (patientCase: PatientCase) => void;
 }
+
+const Container = styled.div`
+  flex: 1;
+`;
+
+const Title = styled.h2`
+  margin: 0 0 ${({ theme }) => theme.spacing[4]} 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.neutral[800]};
+`;
+
+const SortButton = styled.button`
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[3]}`};
+  border: 1px solid ${({ theme }) => theme.colors.neutral[300]};
+  border-radius: ${({ theme }) => theme.borders.radius.base};
+  background-color: ${({ theme }) => theme.colors.neutral[100]};
+  color: ${({ theme }) => theme.colors.neutral[700]};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.neutral[200]};
+  }
+`;
+
+const List = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const ListItem = styled.li`
+  border: 1px solid ${({ theme }) => theme.colors.neutral[200]};
+  border-radius: ${({ theme }) => theme.borders.radius.md};
+  padding: ${({ theme }) => theme.spacing[3]};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.neutral[50]};
+    border-color: ${({ theme }) => theme.colors.primary[300]};
+  }
+`;
+
+const ItemTitle = styled.strong`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.neutral[800]};
+`;
+
+const ItemMeta = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[600]};
+`;
+
+const ItemDescription = styled.p`
+  margin: ${({ theme }) => theme.spacing[2]} 0 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[500]};
+`;
+
+const ItemDiagnosis = styled.p`
+  margin: ${({ theme }) => theme.spacing[1]} 0 0;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[700]};
+`;
+
+const EmptyMessage = styled.p`
+  color: ${({ theme }) => theme.colors.neutral[500]};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
+
+const SortContainer = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+`;
 
 export const PatientCaseList = memo(({ cases, onSelect }: Props) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -24,66 +102,34 @@ export const PatientCaseList = memo(({ cases, onSelect }: Props) => {
   };
 
   return (
-    <div style={{ flex: 1 }}>
-      <h2>症例一覧</h2>
+    <Container>
+      <Title>症例一覧</Title>
 
       {cases.length > 0 && (
-        <div style={{ marginBottom: "12px" }}>
-          <button
-            onClick={toggleSortOrder}
-            style={{
-              padding: "6px 12px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: "#e0e0e0",
-            }}
-          >
+        <SortContainer>
+          <SortButton onClick={toggleSortOrder}>
             作成日 {sortOrder === "asc" ? "▲" : "▼"}
-          </button>
-        </div>
+          </SortButton>
+        </SortContainer>
       )}
 
       {cases.length === 0 ? (
-        <p>症例がありません</p>
+        <EmptyMessage>症例がありません</EmptyMessage>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <List>
           {sortedCases.map((c) => (
-            <li
-              key={c.id}
-              onClick={() => onSelect(c)}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                padding: "12px",
-                marginBottom: "10px",
-                cursor: "pointer",
-                transition: "background-color 0.2s",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#f5f5f5")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "transparent")
-              }
-            >
-              <strong>
+            <ListItem key={c.id} onClick={() => onSelect(c)}>
+              <ItemTitle>
                 {c.animal_type} {c.breed && `(${c.breed})`}
-              </strong>
-              {c.age && <span> - {c.age}歳</span>}
-              {c.sex && <span> - {c.sex}</span>}
-              <p style={{ margin: "8px 0 0", color: "#666" }}>
-                主訴: {c.chief_complaint || "-"}
-              </p>
-              {c.diagnosis && (
-                <p style={{ margin: "4px 0 0", color: "#333" }}>
-                  診断: {c.diagnosis}
-                </p>
-              )}
-            </li>
+              </ItemTitle>
+              {c.age && <ItemMeta> - {c.age}歳</ItemMeta>}
+              {c.sex && <ItemMeta> - {c.sex}</ItemMeta>}
+              <ItemDescription>主訴: {c.chief_complaint || "-"}</ItemDescription>
+              {c.diagnosis && <ItemDiagnosis>診断: {c.diagnosis}</ItemDiagnosis>}
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Container>
   );
 });

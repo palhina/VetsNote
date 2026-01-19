@@ -1,6 +1,17 @@
 import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApiRequest } from "../../hooks/useApiRequest";
+import { PageLayout } from "../../components/layout";
+import { Stack } from "../../components/layout/Container";
+import { Card } from "../../components/layout/Card";
+import {
+  Button,
+  Input,
+  Select,
+  Label,
+  FormField,
+  ErrorMessage,
+} from "../../components/ui";
 
 export const AdminCreate = memo(() => {
   const [name, setName] = useState("");
@@ -26,79 +37,69 @@ export const AdminCreate = memo(() => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "50px auto", padding: "20px" }}>
-      <h1>Create New User</h1>
+    <PageLayout title="Create New User" narrow>
+      <Card>
+        <form onSubmit={handleSubmit}>
+          <Stack $gap={4}>
+            <FormField>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </FormField>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ width: "100%", padding: "10px" }}
-          />
-        </div>
+            <FormField>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </FormField>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "10px" }}
-          />
-        </div>
+            <FormField>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+              />
+            </FormField>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-            style={{ width: "100%", padding: "10px" }}
-          />
-        </div>
+            <FormField>
+              <Label htmlFor="role">Role</Label>
+              <Select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as "user" | "admin")}
+              >
+                <option value="admin">admin</option>
+                <option value="user">user</option>
+              </Select>
+            </FormField>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as "user" | "admin")}
-            style={{ width: "100%", padding: "10px" }}
-          >
-            <option value="admin">admin</option>
-            <option value="user">user</option>
-          </select>
-        </div>
+            {error && <ErrorMessage message={error} />}
 
-        {error && (
-          <p style={{ color: "red", marginBottom: "15px", whiteSpace: "pre-wrap" }}>
-            {error}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            cursor: isLoading ? "not-allowed" : "pointer",
-          }}
-        >
-          {isLoading ? "Creating..." : "Create User"}
-        </button>
-      </form>
-    </div>
+            <Button
+              type="submit"
+              fullWidth
+              isLoading={isLoading}
+              loadingText="Creating..."
+            >
+              Create User
+            </Button>
+          </Stack>
+        </form>
+      </Card>
+    </PageLayout>
   );
 });

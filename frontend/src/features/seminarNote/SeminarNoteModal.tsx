@@ -1,7 +1,14 @@
 import { memo, useState } from "react";
-import { Link } from "react-router-dom";
+import styled from "styled-components";
 import { useApiRequest } from "../../hooks/useApiRequest";
-import { Modal, ModalHeader, ModalActions, ConfirmDialog } from "../../components/ui";
+import {
+  Modal,
+  ModalHeader,
+  ModalActions,
+  ConfirmDialog,
+  Button,
+  LinkButton,
+} from "../../components/ui";
 import type { SeminarNote } from "../../types";
 
 interface Props {
@@ -9,6 +16,31 @@ interface Props {
   onClose: () => void;
   onDelete: (id: number) => void;
 }
+
+const ThemeText = styled.p`
+  color: ${({ theme }) => theme.colors.neutral[500]};
+  margin: 0 0 ${({ theme }) => theme.spacing[4]};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+
+  strong {
+    color: ${({ theme }) => theme.colors.neutral[700]};
+  }
+`;
+
+const Field = styled.div`
+  strong {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    color: ${({ theme }) => theme.colors.neutral[700]};
+  }
+`;
+
+const ContentText = styled.p`
+  margin: ${({ theme }) => theme.spacing[1]} 0 0;
+  white-space: pre-wrap;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.neutral[600]};
+`;
 
 export const SeminarNoteModal = memo(({ note, onClose, onDelete }: Props) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -40,47 +72,23 @@ export const SeminarNoteModal = memo(({ note, onClose, onDelete }: Props) => {
         />
 
         {note.theme && (
-          <p style={{ color: "#666", margin: "0 0 16px" }}>
+          <ThemeText>
             <strong>テーマ:</strong> {note.theme}
-          </p>
+          </ThemeText>
         )}
 
-        <div>
+        <Field>
           <strong>内容:</strong>
-          <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
-            {note.content}
-          </p>
-        </div>
+          <ContentText>{note.content}</ContentText>
+        </Field>
 
         <ModalActions>
-          <button
-            onClick={() => setShowConfirm(true)}
-            style={{
-              padding: "10px 24px",
-              backgroundColor: "#f44336",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
-          >
+          <Button variant="danger" onClick={() => setShowConfirm(true)}>
             削除
-          </button>
-          <Link
-            to={`/seminar-notes/${note.id}/edit`}
-            style={{
-              padding: "10px 24px",
-              backgroundColor: "#2196F3",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "14px",
-              textDecoration: "none",
-            }}
-          >
+          </Button>
+          <LinkButton to={`/seminar-notes/${note.id}/edit`} variant="secondary">
             編集
-          </Link>
+          </LinkButton>
         </ModalActions>
       </Modal>
 

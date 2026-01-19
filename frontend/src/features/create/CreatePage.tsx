@@ -1,6 +1,10 @@
 import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import { useApiRequest } from "../../hooks/useApiRequest";
+import { PageLayout } from "../../components/layout";
+import { Card } from "../../components/layout/Card";
+import { Button } from "../../components/ui";
 import {
   PatientCaseForm,
   initialPatientCaseData,
@@ -11,13 +15,40 @@ import {
   initialSeminarNoteData,
 } from "../seminarNote/SeminarNoteForm";
 import type { SeminarNoteFormData } from "../seminarNote/SeminarNoteForm";
-import {
-  primaryButtonStyle,
-  secondaryButtonStyle,
-} from "../../styles/formStyles";
 import type { PatientCase, SeminarNote } from "../../types";
 
 type FormType = "patient_case" | "seminar_note";
+
+const RadioGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[6]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background-color: ${({ theme }) => theme.colors.neutral[100]};
+  border-radius: ${({ theme }) => theme.borders.radius.md};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+`;
+
+const RadioLabel = styled.label`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.neutral[700]};
+
+  input {
+    margin-right: ${({ theme }) => theme.spacing[2]};
+    width: 18px;
+    height: 18px;
+    accent-color: ${({ theme }) => theme.colors.primary[500]};
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[3]};
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.spacing[6]};
+`;
 
 export const CreatePage = memo(() => {
   const navigate = useNavigate();
@@ -78,100 +109,58 @@ export const CreatePage = memo(() => {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>新規作成</h1>
-
-      {/* フォーム切り替え */}
-      <div
-        style={{
-          display: "flex",
-          gap: "24px",
-          marginBottom: "24px",
-          padding: "16px",
-          backgroundColor: "#f5f5f5",
-          borderRadius: "8px",
-        }}
-      >
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
-        >
+    <PageLayout title="新規作成" narrow>
+      <RadioGroup>
+        <RadioLabel>
           <input
             type="radio"
             name="formType"
             value="patient_case"
             checked={formType === "patient_case"}
             onChange={() => setFormType("patient_case")}
-            style={{ marginRight: "8px", width: "18px", height: "18px" }}
           />
           症例
-        </label>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
-        >
+        </RadioLabel>
+        <RadioLabel>
           <input
             type="radio"
             name="formType"
             value="seminar_note"
             checked={formType === "seminar_note"}
             onChange={() => setFormType("seminar_note")}
-            style={{ marginRight: "8px", width: "18px", height: "18px" }}
           />
           セミナーノート
-        </label>
-      </div>
+        </RadioLabel>
+      </RadioGroup>
 
-      <form onSubmit={handleSubmit}>
-        {formType === "patient_case" ? (
-          <PatientCaseForm
-            data={patientCaseData}
-            onChange={handlePatientCaseChange}
-          />
-        ) : (
-          <SeminarNoteForm
-            data={seminarNoteData}
-            onChange={handleSeminarNoteChange}
-          />
-        )}
+      <Card>
+        <form onSubmit={handleSubmit}>
+          {formType === "patient_case" ? (
+            <PatientCaseForm
+              data={patientCaseData}
+              onChange={handlePatientCaseChange}
+            />
+          ) : (
+            <SeminarNoteForm
+              data={seminarNoteData}
+              onChange={handleSeminarNoteChange}
+            />
+          )}
 
-        {/* ボタン */}
-        <div
-          style={{
-            marginTop: "24px",
-            display: "flex",
-            gap: "12px",
-            justifyContent: "flex-end",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            style={secondaryButtonStyle}
-          >
-            キャンセル
-          </button>
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              ...primaryButtonStyle,
-              cursor: isLoading ? "not-allowed" : "pointer",
-              opacity: isLoading ? 0.7 : 1,
-            }}
-          >
-            {isLoading ? "作成中..." : "作成"}
-          </button>
-        </div>
-      </form>
-    </div>
+          <ButtonGroup>
+            <Button type="button" variant="ghost" onClick={() => navigate("/")}>
+              キャンセル
+            </Button>
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              loadingText="作成中..."
+            >
+              作成
+            </Button>
+          </ButtonGroup>
+        </form>
+      </Card>
+    </PageLayout>
   );
 });

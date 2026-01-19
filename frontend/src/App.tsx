@@ -1,4 +1,3 @@
-import "./App.css";
 import { AppRoutes } from "./routes/AppRoutes";
 import { AuthProvider } from "./features/auth";
 import { Navigation } from "./components/layout/Navigation";

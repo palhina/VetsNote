@@ -12,6 +12,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
+  setUser: (user: User) => void;
 }
 
 const defaultAuthValue: AuthContextValue = {
@@ -22,6 +23,7 @@ const defaultAuthValue: AuthContextValue = {
   login: async () => {},
   logout: async () => {},
   checkAuth: async () => false,
+  setUser: () => {},
 };
 
 const createWrapper = (authValue: Partial<AuthContextValue> = {}) => {
