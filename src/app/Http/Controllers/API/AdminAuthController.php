@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -18,24 +19,24 @@ class AdminAuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+            throw ValidationException::withMessages([
+                'email' => [__('auth.failed')],
+            ]);
         }
 
         $user = Auth::user();
 
         if ($user->role !== 'admin') {
             Auth::logout();
-            return response()->json([
-                'message' => 'Unauthorized. Admin access required.'
-            ], 403);
+            throw ValidationException::withMessages([
+                'email' => [__('auth.admin_required')],
+            ]);
         }
 
         $request->session()->regenerate();
 
         return response()->json([
-            'message' => 'Admin login successful',
+            'message' => '管理者ログインに成功しました',
             'user' => $user
         ]);
     }

@@ -1,10 +1,8 @@
 import { memo, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useApiRequest } from "../../hooks/useApiRequest";
 import { PageLayout } from "../../components/layout";
 import { Inline } from "../../components/layout/Container";
 import {
-  Button,
   LinkButton,
   StatCard,
   Loading,
@@ -20,8 +18,6 @@ interface Statistics {
 export const AdminDashboard = memo(() => {
   const [stats, setStats] = useState<Statistics | null>(null);
   const { execute, isLoading, error } = useApiRequest<Statistics>();
-  const { execute: logoutExecute } = useApiRequest();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -38,25 +34,8 @@ export const AdminDashboard = memo(() => {
     fetchStats();
   }, [execute]);
 
-  const handleLogout = async () => {
-    try {
-      await logoutExecute("/api/admin/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    localStorage.removeItem("adminUser");
-    navigate("/admin/login");
-  };
-
   return (
-    <PageLayout
-      title="管理者画面"
-      actions={
-        <Button variant="danger" onClick={handleLogout}>
-          Logout
-        </Button>
-      }
-    >
+    <PageLayout title="管理者画面">
       <Inline $gap={4}>
         <LinkButton to="/admin/users" variant="secondary">
           User Management

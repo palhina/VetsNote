@@ -8,6 +8,8 @@ use App\Http\Requests\ChangePasswordRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -20,15 +22,15 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+            throw ValidationException::withMessages([
+                'email' => [__('auth.failed')],
+            ]);
         }
 
         $request->session()->regenerate();
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'ログインに成功しました',
             'user' => Auth::user()
         ]);
     }

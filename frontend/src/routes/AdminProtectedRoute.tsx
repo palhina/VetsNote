@@ -1,46 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useApiRequest } from "../hooks/useApiRequest";
-import type { User } from "../types";
+import { useAuth } from "../features/auth";
 
 const LoadingContainer = styled.div`
   padding: 20px;
 `;
 
-interface AdminUserResponse {
-  user: User;
-}
-
 export const AdminProtectedRoute = () => {
   const navigate = useNavigate();
-  const [checking, setChecking] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const { execute } = useApiRequest<AdminUserResponse>();
+  const { isAdmin, user } = useAuth();
 
   useEffect(() => {
-    const verifyAdmin = async () => {
-      try {
-        const response = await execute("/api/admin/user", { method: "GET" });
-        if (response.user && response.user.role === "admin") {
-          setIsAdmin(true);
-        } else {
-          navigate("/admin/login");
-        }
-      } catch {
-        navigate("/admin/login");
-      } finally {
-        setChecking(false);
-      }
-    };
+    // ユーザーが存在しない、または管理者でない場合はログインページへ
+    if (!user || !isAdmin) {
+      navigate("/admin/login");
+    }
+  }, [user, isAdmin, navigate]);
 
-    verifyAdmin();
-  }, [execute, navigate]);
-
-  if (checking) {
+  // ユーザー情報がない場合はローディング表示
+  if (!user) {
     return <LoadingContainer>Verifying admin access...</LoadingContainer>;
   }
 
+  // 管理者でない場合は何も表示しない（useEffectでリダイレクト中）
   if (!isAdmin) {
     return null;
   }
