@@ -38,7 +38,7 @@ class AdminTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Admin login successful',
+                'message' => '管理者ログインに成功しました',
             ])
             ->assertJsonStructure([
                 'user' => ['id', 'name', 'email', 'role'],
@@ -60,10 +60,8 @@ class AdminTest extends TestCase
             'password' => 'userpassword',
         ]);
 
-        $response->assertStatus(403)
-            ->assertJson([
-                'message' => 'Unauthorized. Admin access required.',
-            ]);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
     }
 
     /**

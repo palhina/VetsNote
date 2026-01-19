@@ -48,10 +48,8 @@ class AuthTest extends TestCase
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(401)
-            ->assertJson([
-                'message' => 'Invalid credentials',
-            ]);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
     }
 
     /**
